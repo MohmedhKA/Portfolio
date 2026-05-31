@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const fadeUp = {
   initial: { opacity: 0 },
@@ -10,8 +11,22 @@ const fadeUp = {
 };
 
 export default function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Improvement 4: fade in as the section scrolls up into view
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "start center"],
+  });
+  const sectionOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
   return (
-    <section className="hero" id="top">
+    <motion.section
+      ref={sectionRef}
+      className="hero"
+      id="top"
+      style={{ opacity: sectionOpacity, willChange: "opacity" }}
+    >
       <div className="container hero-grid">
 
         {/* Left column — text content */}
@@ -95,6 +110,6 @@ export default function Hero() {
         </motion.aside>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

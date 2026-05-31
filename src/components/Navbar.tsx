@@ -15,12 +15,31 @@ export default function Navbar() {
     setTheme(isDark ? "light" : "dark");
   }
 
+  function scrollTo(id: string) {
+    return (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+      
+      // Add overlay fade-out class
+      document.body.classList.add("page-transitioning");
+      
+      setTimeout(() => {
+        // Jump to section while hidden
+        document.getElementById(id)?.scrollIntoView({ behavior: "instant" });
+        
+        // Short delay, then remove fade overlay to fade back in
+        setTimeout(() => {
+          document.body.classList.remove("page-transitioning");
+        }, 50);
+      }, 400); // Wait for the CSS opacity transition
+    };
+  }
+
   return (
     <header className="site-header">
       <div className="container nav">
 
         {/* Brand / logo */}
-        <a href="#top" className="brand" aria-label="Go to top">
+        <a href="#top" className="brand" aria-label="Go to top" onClick={scrollTo("top")}>
           <svg
             className="brand-mark"
             viewBox="0 0 64 64"
@@ -50,12 +69,12 @@ export default function Navbar() {
           <span>Mohmedh K A</span>
         </a>
 
-        {/* Nav links */}
+        {/* Nav links — smooth scroll so SkillGraph fade plays naturally */}
         <nav className="nav-links" aria-label="Primary navigation">
-          <a href="#work">Work</a>
-          <a href="#about">About</a>
-          <a href="#approach">Approach</a>
-          <a href="#contact">Contact</a>
+          <a href="#work"     onClick={scrollTo("work")}>Work</a>
+          <a href="#about"    onClick={scrollTo("about")}>About</a>
+          <a href="#approach" onClick={scrollTo("approach")}>Approach</a>
+          <a href="#contact"  onClick={scrollTo("contact")}>Contact</a>
         </nav>
 
         {/* Theme toggle */}

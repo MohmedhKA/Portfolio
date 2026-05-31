@@ -731,14 +731,42 @@ button {
   letter-spacing: 0.06em;
 }
 
+/* --- Page Transition Overlay ------------------------------- */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body.page-transitioning::after {
+  opacity: 1;
+  pointer-events: all;
+}
+
 /* --- SkillGraph -------------------------------------------- */
-.skill-graph {
+.skill-graph-wrapper {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 150vh; /* Extra height for scroll-fade effect */
+}
+
+.skill-graph {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
   display: grid;
   place-items: center;
+  /* Fine grid — matches editorial reference */
+  background-image:
+    linear-gradient(var(--color-divider) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-divider) 1px, transparent 1px);
+  background-size: 52px 52px;
 }
 
 .skill-graph-svg {
@@ -759,13 +787,66 @@ button {
 }
 
 .skill-graph-name {
+  position: relative;
+  display: block;
   font-family: var(--font-display);
   font-size: clamp(4rem, 12vw, 10rem);
   font-weight: 700;
   line-height: 0.92;
   letter-spacing: -0.03em;
   color: var(--color-text);
-  display: block;
+  cursor: default;
+  user-select: none;
+  pointer-events: auto;
+}
+
+/* Glitch layers — Improvement 3: pure CSS :hover, no JS class toggle */
+.skill-graph-name::before,
+.skill-graph-name::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  white-space: nowrap;
+}
+
+.skill-graph-name:hover::before {
+  animation: glitch-1 0.35s steps(2, end) forwards;
+  color: var(--color-primary);
+  clip-path: polygon(0 20%, 100% 20%, 100% 45%, 0 45%);
+  transform: translateX(-3px);
+}
+
+.skill-graph-name:hover::after {
+  animation: glitch-2 0.35s steps(2, end) 0.05s forwards;
+  color: var(--color-text-muted);
+  clip-path: polygon(0 55%, 100% 55%, 100% 80%, 0 80%);
+  transform: translateX(3px);
+}
+
+@keyframes glitch-1 {
+  0%   { opacity: 0; transform: translateX(0); }
+  20%  { opacity: 0.9; transform: translateX(-4px); }
+  40%  { opacity: 0; transform: translateX(2px); }
+  60%  { opacity: 0.8; transform: translateX(-2px); }
+  80%  { opacity: 0; transform: translateX(0); }
+  100% { opacity: 0; }
+}
+
+@keyframes glitch-2 {
+  0%   { opacity: 0; transform: translateX(0); }
+  20%  { opacity: 0.8; transform: translateX(4px); }
+  40%  { opacity: 0; transform: translateX(-2px); }
+  60%  { opacity: 0.7; transform: translateX(2px); }
+  80%  { opacity: 0; }
+  100% { opacity: 0; }
 }
 
 /* Anchor: positions the label at computed x/y, centered on that point */
