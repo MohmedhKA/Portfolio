@@ -1,118 +1,114 @@
 "use client";
 
-import { useRef, useMemo, useCallback, useState } from "react";
+import { useRef, useMemo, useCallback, useEffect } from "react";
 import {
   motion,
   useMotionValue,
   useSpring,
   useTransform,
-  useScroll,
-  animate,
   type MotionValue,
 } from "framer-motion";
 import { skills, type Skill } from "@/src/data/skills";
 
+// ─── Data layer ───────────────────────────────────────────────────────────────
+
 interface ComputedSkill extends Skill {
   pos: { x: number; y: number };
+  floatX: number[];
+  floatY: number[];
+  floatDur: number;
+  floatDelay: number;
 }
 
 function computePositions(): ComputedSkill[] {
   return skills.map((skill) => {
     const rad = (skill.angle * Math.PI) / 180;
+    const fx = (skill.depth * 6 + Math.sin(rad) * 4) * 4;
+    const fy = (skill.depth * 5 + Math.cos(rad) * 3) * 4;
     return {
       ...skill,
       pos: {
         x: 50 + Math.cos(rad) * skill.distance * 50,
         y: 50 + Math.sin(rad) * skill.distance * 50,
       },
+      floatX: [0, fx, -fx * 0.6, fx * 0.4, 0],
+      floatY: [0, fy * 0.5, fy, -fy * 0.3, 0],
+      floatDur: skill.depth * 5 + 8,
+      floatDelay: Math.abs(skill.angle % 7),
     };
   });
 }
 
-// ─── Improvement 1 + 2: SkillLabel with float + pull ─────────────────────────
+// ─── SkillLabel ───────────────────────────────────────────────────────────────
 
 interface SkillLabelProps {
   skill: ComputedSkill;
   springX: MotionValue<number>;
   springY: MotionValue<number>;
-  pullProgress: MotionValue<number>;
-  containerRef: React.RefObject<HTMLElement | null>;
-  isPulling: boolean;
+  hoverSignal: MotionValue<number>;
 }
 
-function SkillLabel({ skill, springX, springY, pullProgress, containerRef, isPulling }: SkillLabelProps) {
-  // Organic float keyframe offsets — unique per skill, computed once
-  const floatX = useMemo(() => {
-    const v = (skill.depth * 6) + Math.sin(skill.angle) * 4;
-    return [0, v, -v * 0.6, v * 0.4, 0];
-  }, [skill.depth, skill.angle]);
+function SkillLabel({ skill, springX, springY, hoverSignal }: SkillLabelProps) {
+  // Parallax — cursor spring, single source
+  const px = useTransform(springX, (v) => v * skill.depth * 0.018);
+  const py = useTransform(springY, (v) => v * skill.depth * 0.018);
 
-  const floatY = useMemo(() => {
-    const v = (skill.depth * 5) + Math.cos(skill.angle) * 3;
-    return [0, v * 0.5, v, -v * 0.3, 0];
-  }, [skill.depth, skill.angle]);
-
-  const floatDuration = useMemo(() => skill.depth * 4 + 6, [skill.depth]);
-
-  // Parallax: derived from cursor spring values + pullProgress
-  const x = useTransform([springX, pullProgress], ([sx, p]) => {
-    const W = (containerRef.current as HTMLElement | null)?.offsetWidth
-      ?? (typeof window !== "undefined" ? window.innerWidth : 1440);
-    const pull = ((50 - skill.pos.x) / 100) * W * 0.75;
-    return (sx as number) * skill.depth * 0.018 + (p as number) * pull;
-  });
-
-  const y = useTransform([springY, pullProgress], ([sy, p]) => {
-    const H = (containerRef.current as HTMLElement | null)?.offsetHeight
-      ?? (typeof window !== "undefined" ? window.innerHeight : 900);
-    const pull = ((50 - skill.pos.y) / 100) * H * 0.75;
-    return (sy as number) * skill.depth * 0.018 + (p as number) * pull;
-  });
-
-  // Improvement 2: gravitational pull toward center via animate prop
-  // 0.08 factor = gentle magnetic nudge, not a full collapse
-  const pullX = isPulling ? -skill.pos.x * 0.08 : 0;
-  const pullY = isPulling ? -skill.pos.y * 0.08 : 0;
+  // Scale up slightly when name is hovered — reads MotionValue, zero re-renders
+  const labelScale = useTransform(hoverSignal, [0, 1], [1, 1.22]);
 
   return (
     <span
       className="skill-label-anchor"
       style={{ left: `${skill.pos.x}%`, top: `${skill.pos.y}%` }}
     >
-      {/* Outer: Improvement 2 — gravitational pull animate */}
+      {/* Layer 1: float — keyframes baked at compute time, never recreated */}
       <motion.span
-        animate={{ x: pullX, y: pullY }}
-        transition={{ type: "spring", stiffness: 120, damping: 18 }}
+        animate={{ x: skill.floatX, y: skill.floatY }}
+        transition={{
+          duration: skill.floatDur,
+          repeat: Infinity,
+          repeatType: "reverse",
+          times: [0, 0.3, 0.6, 0.85, 1],
+          delay: skill.floatDelay,
+        }}
       >
-        {/* Middle: Improvement 1 — organic float keyframes */}
+        {/* Layer 2: parallax + scale via MotionValues only, no state */}
         <motion.span
-          animate={{ x: floatX, y: floatY }}
-          transition={{
-            duration: floatDuration,
-            repeat: Infinity,
-            ease: "easeInOut",
-            repeatType: "mirror",
+          className="skill-label"
+          style={{
+            x: px,
+            y: py,
+            scale: labelScale,
+            willChange: "transform",
+            transformOrigin: "center center",
           }}
         >
-          {/* Inner: parallax from cursor */}
-          <motion.span
-            className="skill-label"
-            style={{ x, y, willChange: "opacity" }}
-          >
-            {skill.label}
-          </motion.span>
+          {skill.label}
         </motion.span>
       </motion.span>
     </span>
   );
 }
 
-// ─── main component ───────────────────────────────────────────────────────────
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export default function SkillGraph() {
-  const containerRef = useRef<HTMLElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
-  const [isPulling, setIsPulling] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Sync container size to a ref — no state, no re-renders
+  useEffect(() => {
+    const update = () => {
+      if (!containerRef.current) return;
+      // Nothing to store here — containerW/H no longer needed after removing pull
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  // Hover signal — MotionValue only, never setState
+  const hoverSignalRaw = useMotionValue(0);
+  const hoverSignal = useSpring(hoverSignalRaw, { stiffness: 200, damping: 22 });
 
   // Cursor parallax
   const rawX = useMotionValue(0);
@@ -122,24 +118,13 @@ export default function SkillGraph() {
   const svgX = useTransform(springX, (v) => v * 0.008);
   const svgY = useTransform(springY, (v) => v * 0.008);
 
-  // Pull-toward-center via motion value (for SVG / parallax offset)
-  const pullProgress = useMotionValue(0);
-
-  // Improvement 4: Scroll-driven fade + blur on the inner content div
-  const { scrollYProgress } = useScroll({
-    target: containerRef as React.RefObject<HTMLElement>,
-    offset: ["end end", "end start"],
-  });
-  const sectionOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
-  const sectionBlur = useTransform(scrollYProgress, [0, 0.4], ["blur(0px)", "blur(6px)"]);
-
   const computed = useMemo(() => computePositions(), []);
 
+  // Handlers — MotionValues + body attribute, never setState
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
-      const el = containerRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
       rawX.set(e.clientX - rect.left - rect.width / 2);
       rawY.set(e.clientY - rect.top - rect.height / 2);
     },
@@ -151,92 +136,71 @@ export default function SkillGraph() {
     rawY.set(0);
   }, [rawX, rawY]);
 
-  // Improvement 2: hover the name → smooth pull in
   const handleNameEnter = useCallback(() => {
-    setIsPulling(true);
-    animate(pullProgress, 1, { type: "spring", stiffness: 45, damping: 20 });
-  }, [pullProgress]);
+    hoverSignalRaw.set(1);
+    document.body.setAttribute("data-name-hover", "true");
+  }, [hoverSignalRaw]);
 
-  // Snap back out with overshoot spring
   const handleNameLeave = useCallback(() => {
-    setIsPulling(false);
-    animate(pullProgress, 0, { type: "spring", stiffness: 500, damping: 12, mass: 0.8 });
-  }, [pullProgress]);
+    hoverSignalRaw.set(0);
+    document.body.removeAttribute("data-name-hover");
+  }, [hoverSignalRaw]);
 
   return (
-    <section
-      ref={containerRef as React.RefObject<HTMLElement>}
-      className="skill-graph-wrapper"
-    >
+    <section className="skill-graph-wrapper">
       <div
+        ref={containerRef}
         className="skill-graph"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         aria-label="Skill map"
       >
-        {/* Improvement 4: inner content fades + blurs on scroll */}
-        <motion.div
-          ref={innerRef}
-          style={{
-            opacity: sectionOpacity,
-            filter: sectionBlur,
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            inset: 0,
-            display: "grid",
-            placeItems: "center",
-            willChange: "opacity",
-          }}
+        {/* SVG spoke lines */}
+        <motion.svg
+          className="skill-graph-svg"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          style={{ x: svgX, y: svgY }}
         >
-          {/* SVG lines */}
-          <motion.svg
-            className="skill-graph-svg"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-            style={{ x: svgX, y: svgY }}
-          >
-            {computed.map((skill) => (
-              <line
-                key={skill.label}
-                x1="50"
-                y1="50"
-                x2={skill.pos.x}
-                y2={skill.pos.y}
-                stroke="var(--color-border)"
-                strokeWidth="0.8"
-                strokeLinecap="round"
-                vectorEffect="non-scaling-stroke"
-              />
-            ))}
-          </motion.svg>
-
-          {/* Improvement 3: center name with data-text for CSS glitch */}
-          <div className="skill-graph-center">
-            <span
-              className="skill-graph-name"
-              data-text="Mohmedh K A"
-              onMouseEnter={handleNameEnter}
-              onMouseLeave={handleNameLeave}
-            >
-              Mohmedh K A
-            </span>
-          </div>
-
-          {/* Labels */}
           {computed.map((skill) => (
-            <SkillLabel
+            <line
               key={skill.label}
-              skill={skill}
-              springX={springX}
-              springY={springY}
-              pullProgress={pullProgress}
-              containerRef={containerRef}
-              isPulling={isPulling}
+              x1="50"
+              y1="50"
+              x2={skill.pos.x}
+              y2={skill.pos.y}
+              stroke="var(--color-border)"
+              strokeWidth="0.8"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
             />
           ))}
-        </motion.div>
+        </motion.svg>
+
+        {/* Center: pulse ring sits BEFORE the name, anchored inside the center div */}
+        <div className="skill-graph-center">
+          <div className="skill-graph-pulse" aria-hidden="true" />
+          <span
+            className="skill-graph-name"
+            data-text="Mohmedh K A"
+            onMouseEnter={handleNameEnter}
+            onMouseLeave={handleNameLeave}
+          >
+            Mohmedh K A
+          </span>
+        </div>
+
+        {/* Skill labels — stable keys, never unmount on hover */}
+        {computed.map((skill) => (
+          <SkillLabel
+            key={skill.label}
+            skill={skill}
+            springX={springX}
+            springY={springY}
+            hoverSignal={hoverSignal}
+          />
+        ))}
       </div>
     </section>
   );

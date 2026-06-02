@@ -215,7 +215,7 @@ button {
 
 /* --- Hero -------------------------------------------------- */
 .hero {
-  padding: clamp(var(--space-12), 10vw, var(--space-24)) 0 var(--space-12);
+  padding: clamp(var(--space-6), 4vw, var(--space-10)) 0 var(--space-8);
 }
 
 .hero-grid {
@@ -404,7 +404,7 @@ button {
 .preview-layout {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  min-height: 18rem;
+  min-height: 13rem;
 }
 
 .preview-main,
@@ -750,15 +750,29 @@ body.page-transitioning::after {
 /* --- SkillGraph -------------------------------------------- */
 .skill-graph-wrapper {
   position: relative;
-  width: 100%;
-  height: 150vh; /* Extra height for scroll-fade effect */
+  height: 100vh;
+  overflow: hidden;
+}
+
+@supports (animation-timeline: scroll()) {
+  .skill-graph-wrapper {
+    animation: skill-graph-fade linear both;
+    animation-timeline: view();
+    animation-range: exit 0% exit 40%;
+  }
+
+  @keyframes skill-graph-fade {
+    to {
+      opacity: 0;
+      filter: blur(8px);
+    }
+  }
 }
 
 .skill-graph {
-  position: sticky;
-  top: 0;
+  position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -784,6 +798,8 @@ body.page-transitioning::after {
   text-align: center;
   pointer-events: none;
   user-select: none;
+  display: grid;
+  place-items: center;
 }
 
 .skill-graph-name {
@@ -866,6 +882,243 @@ body.page-transitioning::after {
   white-space: nowrap;
   cursor: default;
   user-select: none;
+}
+
+/* --- SkillGraph pulse ring --------------------------------- */
+.skill-graph-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-primary);
+  opacity: 0.15;
+  pointer-events: none;
+  animation: pulse-ring 4s ease-in-out infinite;
+  z-index: -1;
+}
+
+.skill-graph-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -3rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-primary);
+  opacity: 0.07;
+  animation: pulse-ring-inner 4s ease-in-out infinite 1.4s;
+}
+
+/* Parent has translate, so scale in keyframe doesn't fight positioning */
+@keyframes pulse-ring {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 0.15; }
+  50%       { transform: translate(-50%, -50%) scale(1.14); opacity: 0.05; }
+}
+
+/* ::after is already inside centered parent — no translate needed */
+@keyframes pulse-ring-inner {
+  0%, 100% { transform: scale(1);    opacity: 0.07; }
+  50%       { transform: scale(1.1);  opacity: 0.02; }
+}
+
+/* ── Hover states: page blur + pulse accelerates ──────────── */
+
+/* Default transitions for smooth in/out */
+.skill-graph-svg,
+.skill-label-anchor,
+.site-header {
+  transition: filter 0.4s ease, opacity 0.4s ease;
+}
+
+/* SVG lines + skill labels blur when name is hovered */
+body[data-name-hover="true"] .skill-graph-svg,
+body[data-name-hover="true"] .skill-label-anchor {
+  filter: blur(3px);
+  opacity: 0.35;
+}
+
+/* Navbar blurs slightly */
+body[data-name-hover="true"] .site-header {
+  filter: blur(4px);
+  opacity: 0.5;
+}
+
+/* Pulse ring beats faster and brightens on hover */
+body[data-name-hover="true"] .skill-graph-pulse {
+  animation-duration: 0.7s;
+  opacity: 0.4;
+  border-width: 1.5px;
+}
+
+body[data-name-hover="true"] .skill-graph-pulse::after {
+  animation-duration: 0.7s;
+  opacity: 0.2;
+}
+
+/* --- Hero tab card ----------------------------------------- */
+.hero-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--color-divider);
+  margin-bottom: var(--space-6);
+}
+
+.hero-tab {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 180ms ease, border-color 180ms ease;
+  cursor: pointer;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+.hero-tab:hover {
+  color: var(--color-text-muted);
+}
+
+.hero-tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.hero-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-height: 34rem;
+}
+
+/* --- Hero profile photo ------------------------------------ */
+.hero-photo-wrap {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  line-height: 0;
+  border: 1px solid var(--color-border);
+}
+
+.hero-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  object-position: top center;
+  filter: saturate(0.9) contrast(1.04);
+  border-radius: var(--radius-lg);
+}
+
+.hero-photo-vignette {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-surface) 55%, transparent),
+    transparent
+  );
+  pointer-events: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* Corner brackets */
+.hero-photo-corners {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hpc {
+  position: absolute;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.hpc.tl {
+  top: 0.6rem;
+  left: 0.6rem;
+  border-top: 1.5px solid var(--color-primary);
+  border-left: 1.5px solid var(--color-primary);
+}
+
+.hpc.tr {
+  top: 0.6rem;
+  right: 0.6rem;
+  border-top: 1.5px solid var(--color-primary);
+  border-right: 1.5px solid var(--color-primary);
+}
+
+.hpc.bl {
+  bottom: 0.6rem;
+  left: 0.6rem;
+  border-bottom: 1.5px solid var(--color-primary);
+  border-left: 1.5px solid var(--color-primary);
+}
+
+.hpc.br {
+  bottom: 0.6rem;
+  right: 0.6rem;
+  border-bottom: 1.5px solid var(--color-primary);
+  border-right: 1.5px solid var(--color-primary);
+}
+
+/* Name + role below photo */
+.hero-profile-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0 var(--space-2);
+}
+
+.hero-profile-name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.hero-profile-role {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-faint);
+}
+
+/* --- Custom scrollbar -------------------------------------- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  transition: background 200ms ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-faint);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
 }
 
 /* --- Reduced motion ---------------------------------------- */
