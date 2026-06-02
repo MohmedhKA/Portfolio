@@ -37,7 +37,6 @@ export default function PortfolioRoot() {
             : { filter: "blur(0px)", opacity: 1 }
         }
         transition={{ duration: 0.9, ease: "easeOut" }}
-        // @ts-expect-error — inert is a valid HTML attribute, TS types lag behind
         inert={splashVisible ? true : undefined}
         aria-hidden={splashVisible}
       >
