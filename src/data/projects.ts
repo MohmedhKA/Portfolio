@@ -4,7 +4,7 @@ export interface Project {
   tags: string[];
   year: string;
   learned?: string;
-  role?: string;
+  techStack?: string;
   github?: string;
   showImage?: boolean;
   image?: string;
@@ -17,36 +17,36 @@ export const projects: Project[] = [
       "A Hyperledger Fabric-based e-voting system with Private Data Collections, batch processing, and end-to-end verifiability. Designed for high-throughput elections with cryptographic audit trails.",
     tags: ["Hyperledger Fabric", "Node.js", "Research"],
     year: "2025",
-    role: "Lead Developer & Researcher",
+    techStack: "Hyperledger Fabric, Node.js, React, Docker, GO",
     learned:
       "Hyperledger Fabric internals, Private Data Collections, Byzantine fault tolerance, and cryptographic audit design.",
-    github: "https://github.com/MohmedhKA/blockchain-evoting",
+    github: "https://github.com/MohmedhKA/E-Voting-V2",
     showImage: true,
-    image: "https://raw.githubusercontent.com/MohmedhKA/blockchain-evoting/main/preview.png",
+    image: "https://github.com/MohmedhKA/E-Voting-V2/blob/main/docs/images/app-screenshot.png?raw=true",
   },
   {
-    title: "Network Intrusion Detection",
+    title: "AutoVulnScan",
     description:
-      "ML-driven IDS that classifies network traffic anomalies in real time. Trained on CICIDS2017 dataset with a custom feature pipeline and a REST API for SIEM integration.",
-    tags: ["Python", "scikit-learn", "SIEM"],
-    year: "2024",
-    role: "ML Engineer",
+      "Automates vulnerability scanning, penetration testing, and security assessment using AI-driven vulnerability detection. Integrates with multiple security tools and provides comprehensive reports.",
+    tags: ["Python", "AI Security"],
+    year: "2025",
+    techStack : "Python, Flask, REST API, NVD, CWE, Socket.io",
     learned:
-      "Feature engineering on CICIDS2017, scikit-learn pipelines, and real-time anomaly classification with REST integration.",
-    github: "https://github.com/MohmedhKA/network-ids",
+      "NVD API integration, CWE database mapping, real-time vulnerability analysis, and REST API design for security tools.",
+    github: "https://github.com/MohmedhKA/AutoVulnScan",
     showImage: true,
-    image: "https://raw.githubusercontent.com/MohmedhKA/network-ids/main/preview.png",
+    image: "https://github.com/MohmedhKA/AutoVulnScan/blob/main/assets/Main_Screen.png?raw=true",
   },
   {
-    title: "CTF Toolkit",
+    title: "Phishing Mail Detection",
     description:
-      "Personal collection of automation scripts and writeups for Capture The Flag competitions — covering forensics, web exploitation, binary analysis, and OSINT.",
-    tags: ["Python", "Bash", "CTF"],
-    year: "2024",
-    role: "Security Researcher",
+      "LSTM-based phishing email detection system which uses the collection of datasets to equalise the \"HAM\" and \"Spam\" datasets. Which uses the pre-processing and feature engineering to classify the emails as phishing or legitimate.",
+    tags: ["Python", "Deep Learning", "Spam Detection"],
+    year: "2025",
+    techStack: "Python, LSTM, scikit-learn, Pandas",
     learned:
-      "Binary exploitation, forensics automation, OSINT methodology, and rapid scripting under competition pressure.",
-    github: "https://github.com/MohmedhKA/ctf-toolkit",
+      "How the spam detection works, feature engineering, scikit-learn pipelines",
+    github: "https://github.com/MohmedhKA/PhishingMailDetection",
     showImage: false,
   },
   {
@@ -55,10 +55,10 @@ export const projects: Project[] = [
       "End-to-end encrypted messaging app with Signal Protocol-inspired key exchange, forward secrecy, and a minimal React frontend. Built as a cryptography deep-dive.",
     tags: ["React", "Node.js", "Cryptography"],
     year: "2023",
-    role: "Full-Stack Developer",
+    techStack: "React, Node.js, WebSockets, Crypto",
     learned:
       "Signal Protocol key exchange, forward secrecy implementation, and the gap between cryptography theory and production code.",
     github: "https://github.com/MohmedhKA/secure-chat",
-    showImage: false,
+    showImage: false
   },
 ];

@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
-export default function Navbar() {
+interface NavbarProps {
+  onContactClick?: () => void;
+}
+
+export default function Navbar({ onContactClick }: NavbarProps) {
   const { resolvedTheme, setTheme } = useTheme();
   // Avoid hydration mismatch — icon only renders after mount
   const [mounted, setMounted] = useState(false);
@@ -74,7 +78,19 @@ export default function Navbar() {
           <a href="#work"     onClick={scrollTo("work")}>Work</a>
           <a href="#about"    onClick={scrollTo("about")}>About</a>
           <a href="#approach" onClick={scrollTo("approach")}>Approach</a>
-          <a href="#contact"  onClick={scrollTo("contact")}>Contact</a>
+          <a
+            href="#contact"
+            onClick={(e) => {
+              e.preventDefault();
+              if (onContactClick) {
+                onContactClick();
+              } else {
+                scrollTo("contact")(e as React.MouseEvent<HTMLAnchorElement>);
+              }
+            }}
+          >
+            Contact
+          </a>
         </nav>
 
         {/* Theme toggle */}

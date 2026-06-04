@@ -10,7 +10,11 @@ const fadeUp = {
   transition: { duration: 0.6, ease: "easeOut" as const },
 };
 
-export default function Hero() {
+interface HeroProps {
+  onContactClick: () => void;
+}
+
+export default function Hero({ onContactClick }: HeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [tab, setTab] = useState<"profile" | "latest">("profile");
 
@@ -41,7 +45,7 @@ export default function Hero() {
           </p>
           <div className="hero-actions">
             <a className="btn btn-primary" href="#work">See selected work</a>
-            <a className="btn btn-secondary" href="#contact">Get in touch</a>
+            <button className="btn btn-secondary" onClick={onContactClick} type="button">Get in touch</button>
           </div>
           <div className="hero-meta" aria-label="Quick introduction details">
             <div className="meta-item">
