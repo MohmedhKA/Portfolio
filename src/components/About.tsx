@@ -24,14 +24,15 @@ export default function About({ onContactClick }: AboutProps) {
             <div className="eyebrow">About</div>
             <h2>I stopped chasing the complex and started chasing what holds.</h2>
             <p>
-              My focus is applied security — understanding how systems fail,
-              what attackers exploit, and how to build things that are honest
+              My focus is applied security — understanding how systems runs a software
+              to the point of mnemonics code, see how it works, how it fails,
+              what attackers exploit and how to build things that are honest
               about their threat model. I work across blockchain protocols,
               network analysis, and offensive security research.
             </p>
             <p>
-              Based in Coimbatore, India. Currently finishing my undergraduate
-              degree while publishing research and competing in CTFs. If the
+              Based in Erode, India. Currently finishing my undergraduate
+              degree while publishing research. If the
               problem is hard and the stakes are real, I&rsquo;m interested.
             </p>
           </motion.div>
@@ -56,11 +57,11 @@ export default function About({ onContactClick }: AboutProps) {
               </li>
               <li>
                 <span>03</span>
-                Document assumptions — every cryptographic choice is a risk.
+                Document assumptions and every cryptographic choice is a risk.
               </li>
               <li>
                 <span>04</span>
-                Break it yourself before someone else does.
+                Break it by myself before someone else does.
               </li>
             </ul>
           </motion.aside>

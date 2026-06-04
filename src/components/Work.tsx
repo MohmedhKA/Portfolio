@@ -42,7 +42,7 @@ export default function Work() {
           </div>
           <p>
             A collection of projects across blockchain security, network
-            defence, and applied cryptography — each built to solve a real
+            Analysis, and applied cryptography. Each built to solve a real
             problem, not to demonstrate a framework.
           </p>
         </motion.div>
@@ -65,17 +65,33 @@ export default function Work() {
               transition={{ layout: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }, duration: 0.6, ease: "easeOut" }}
             >
               {/* Visual area */}
-              <div className="project-visual" aria-hidden="true">
+              <div
+                className="project-visual"
+                aria-hidden="true"
+                data-discontinued={project.status === "discontinued" ? "true" : "false"}
+              >
                 <div className="project-scanline" />
 
                 {/* Terminal view — shown when showImage is false */}
                 {!project.showImage && (
                   <div className="project-terminal">
-                    <span className="pt-line pt-line--cmd">{`> init ${project.tags[0].toLowerCase().replace(/\s/g, '-')}`}</span>
-                    <span className="pt-line pt-line--ok">✓ dependencies resolved</span>
-                    <span className="pt-line pt-line--info">{`[${project.year}] ${project.tags.join(' · ')}`}</span>
-                    <span className="pt-line pt-line--dim">running security audit...</span>
-                    <span className="pt-line pt-line--cursor">█</span>
+                    {project.status === "discontinued" ? (
+                      <>
+                        <span className="pt-line pt-line--cmd">&gt; build release</span>
+                        <span className="pt-line pt-line--error">✗ fatal: OEM background limits</span>
+                        <span className="pt-line pt-line--dim">WorkManager jobs silently killed</span>
+                        <span className="pt-line pt-line--dim">&gt; abort</span>
+                        <span className="pt-line pt-line--cursor">█</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="pt-line pt-line--cmd">{`> init ${project.tags[0].toLowerCase().replace(/\s/g, '-')}`}</span>
+                        <span className="pt-line pt-line--ok">✓ dependencies resolved</span>
+                        <span className="pt-line pt-line--info">{`[${project.year}] ${project.tags.join(' · ')}`}</span>
+                        <span className="pt-line pt-line--dim">running security audit...</span>
+                        <span className="pt-line pt-line--cursor">█</span>
+                      </>
+                    )}
                   </div>
                 )}
 
@@ -98,6 +114,11 @@ export default function Work() {
                     <span className="pt-line pt-line--cursor">█</span>
                   </div>
                 )}
+                {project.status === "discontinued" && (
+                  <div className="project-discontinued-stamp" aria-hidden="true">
+                    Discontinued
+                  </div>
+                )}
               </div>
 
               <div className="project-card-content">
@@ -106,6 +127,9 @@ export default function Work() {
                   <div className="project-card-header">
                     <h3>{project.title}</h3>
                     <span className="project-year">{project.year}</span>
+                    {project.status === "discontinued" && (
+                      <span className="project-status-badge">Discontinued</span>
+                    )}
                   </div>
                   <p>{project.description}</p>
                   {project.github && (

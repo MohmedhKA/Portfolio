@@ -8,6 +8,7 @@ export interface Project {
   github?: string;
   showImage?: boolean;
   image?: string;
+  status?: "active" | "discontinued";
 }
 
 export const projects: Project[] = [
@@ -42,7 +43,7 @@ export const projects: Project[] = [
     description:
       "LSTM-based phishing email detection system which uses the collection of datasets to equalise the \"HAM\" and \"Spam\" datasets. Which uses the pre-processing and feature engineering to classify the emails as phishing or legitimate.",
     tags: ["Python", "Deep Learning", "Spam Detection"],
-    year: "2025",
+    year: "2024",
     techStack: "Python, LSTM, scikit-learn, Pandas",
     learned:
       "How the spam detection works, feature engineering, scikit-learn pipelines",
@@ -50,15 +51,15 @@ export const projects: Project[] = [
     showImage: false,
   },
   {
-    title: "Secure Chat Application",
+    title: "Productivity Launcher",
     description:
-      "End-to-end encrypted messaging app with Signal Protocol-inspired key exchange, forward secrecy, and a minimal React frontend. Built as a cryptography deep-dive.",
-    tags: ["React", "Node.js", "Cryptography"],
+      "A lightweight Android productivity app built around quick actions, task nudges, and workflow automation for daily mobile use.",
+    tags: ["Android", "Kotlin", "Background Tasks"],
     year: "2023",
-    techStack: "React, Node.js, WebSockets, Crypto",
+    techStack: "Android, Kotlin, WorkManager, Jetpack Compose",
     learned:
-      "Signal Protocol key exchange, forward secrecy implementation, and the gap between cryptography theory and production code.",
-    github: "https://github.com/MohmedhKA/secure-chat",
-    showImage: false
+      "Discovered hard limits on background process execution in modern OEM Android builds — WorkManager jobs were silently killed. Scrapped after testing across multiple devices.",
+    showImage: false,
+    status: "discontinued",
   },
 ];

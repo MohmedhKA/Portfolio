@@ -40,7 +40,7 @@ export default function Hero({ onContactClick }: HeroProps) {
           <h1>Building security that holds up under pressure.</h1>
           <p>
             I research, break, and rebuild systems — from blockchain voting
-            protocols to network intrusion detection. Based in Coimbatore,
+            protocols to network intrusion detection. Based in Erode,
             India, focused on applied security and clean engineering.
           </p>
           <div className="hero-actions">
@@ -54,11 +54,11 @@ export default function Hero({ onContactClick }: HeroProps) {
             </div>
             <div className="meta-item">
               <span>Focus</span>
-              <strong>Blockchain, CTF, IDS</strong>
+              <strong>Blockchain, Network, Crypto</strong>
             </div>
             <div className="meta-item">
               <span>Location</span>
-              <strong>Coimbatore, India</strong>
+              <strong>Erode, India</strong>
             </div>
           </div>
         </motion.div>
