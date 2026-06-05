@@ -51,11 +51,14 @@ export default function MinecraftContact({ open, onClose }: MinecraftContactProp
     }, 80);
 
     try {
-      await fetch("https://formspree.io/f/YOUR_FORM_ID", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
-      });
+      const formUrl = process.env.NEXT_PUBLIC_FORMSPREE_URL || "";
+      if (formUrl) {
+        await fetch(formUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, message }),
+        });
+      }
     } catch (_) {}
 
     setTimeout(() => { setPhase("done"); }, 2600);
