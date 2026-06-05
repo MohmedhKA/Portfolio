@@ -968,7 +968,7 @@ body.page-transitioning::after {
   display: block;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   color: var(--color-text-muted);
   white-space: nowrap;
   cursor: default;
