@@ -31,7 +31,7 @@ export const projects: Project[] = [
       "Automates vulnerability scanning, penetration testing, and security assessment using AI-driven vulnerability detection. Integrates with multiple security tools and provides comprehensive reports.",
     tags: ["Python", "AI Security"],
     year: "2025",
-    techStack : "Python, Flask, REST API, NVD, CWE, Socket.io",
+    techStack: "Python, Flask, REST API, NVD, CWE, Socket.io",
     learned:
       "NVD API integration, CWE database mapping, real-time vulnerability analysis, and REST API design for security tools.",
     github: "https://github.com/MohmedhKA/AutoVulnScan",
@@ -59,6 +59,7 @@ export const projects: Project[] = [
     techStack: "Android, Kotlin, WorkManager, Jetpack Compose",
     learned:
       "Discovered hard limits on background process execution in modern OEM Android builds — WorkManager jobs were silently killed. Scrapped after testing across multiple devices.",
+    github: "https://github.com/MohmedhKA/ProductivityApp",
     showImage: false,
     status: "discontinued",
   },

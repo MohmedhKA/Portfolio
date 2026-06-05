@@ -1718,6 +1718,13 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
   padding-bottom: calc(var(--space-section) * 1.2);
 }
 
+@media (max-width: 768px) {
+  .contact-terminal-section {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}
+
 .contact-terminal {
   border: 1px solid var(--color-divider);
   border-radius: var(--radius-lg);
@@ -1762,7 +1769,15 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
   font-size: var(--text-xs);
   color: var(--color-text-faint);
   letter-spacing: 0.06em;
-  margin-right: 3.5rem; /* optical balance vs dots */
+  /* optical balance against the traffic-light dots on desktop */
+  margin-right: 3.5rem;
+}
+
+@media (max-width: 640px) {
+  .ct-title-bar {
+    margin-right: 0;
+    text-align: left;
+  }
 }
 
 /* Terminal body */
@@ -1770,14 +1785,15 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: var(--space-6);
-  padding: var(--space-6) var(--space-6);
-  align-items: center;
+  padding: var(--space-6);
+  align-items: start;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .ct-body {
     grid-template-columns: 1fr;
-    gap: var(--space-5);
+    gap: 0;
+    padding: var(--space-4);
   }
 }
 
@@ -1840,21 +1856,22 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
 .ct-cta {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-3);
   min-width: 140px;
   padding-left: var(--space-4);
   border-left: 1px solid var(--color-divider);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .ct-cta {
+    min-width: 0;
+    width: 100%;
     padding-left: 0;
     border-left: none;
     border-top: 1px solid var(--color-divider);
+    margin-top: var(--space-5);
     padding-top: var(--space-4);
-    width: 100%;
-    align-items: flex-start;
   }
 }
 
@@ -1863,7 +1880,7 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
   color: var(--color-text-faint);
   letter-spacing: 0.06em;
   margin: 0;
-  text-align: center;
+  text-align: left;
   font-weight: 600;
 }
 
@@ -1966,6 +1983,42 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
 /* Error terminal line */
 .pt-line--error {
   color: #f87171;
+}
+
+/* Social links row in contact terminal */
+.ct-social-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-divider);
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .ct-social-links {
+    /* ct-cta already draws a top border — remove the inner one */
+    border-top: none;
+    margin-top: var(--space-3);
+    padding-top: 0;
+  }
+}
+
+.ct-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-faint);
+  transition:
+    color 200ms ease,
+    transform 200ms ease;
+}
+
+.ct-social-link:hover {
+  color: var(--color-primary);
+  transform: translateY(-2px);
 }
 
 /* --- Reduced motion ---------------------------------------- */

@@ -15,4 +15,6 @@ export const skills: Skill[] = [
   { label: "Blockchain",         angle: 70,  distance: 0.65, depth: 0.85 },
   { label: "Assembly",           angle: 40,  distance: 0.67, depth: 0.82 },
   { label: "Metasploit",         angle: 0, distance: 0.67, depth: 0.82},
+  { label: "Rest API",         angle: -90, distance: 0.67, depth: 0.82},
+
 ];

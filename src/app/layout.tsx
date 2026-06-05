@@ -17,7 +17,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Mohmed H — Developer",
+  title: "Mohmedh K A | Student",
   description:
     "A clean, warm, editorial-style personal portfolio with refined typography and minimal layout.",
 };
