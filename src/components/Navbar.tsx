@@ -75,8 +75,8 @@ export default function Navbar({ onContactClick }: NavbarProps) {
 
         {/* Nav links — smooth scroll so SkillGraph fade plays naturally */}
         <nav className="nav-links" aria-label="Primary navigation">
-          <a href="#work"     onClick={scrollTo("work")}>Work</a>
           <a href="#domains"  onClick={scrollTo("domains")}>Domains</a>
+          <a href="#work"     onClick={scrollTo("work")}>Work</a>
           <a href="#about"    onClick={scrollTo("about")}>About</a>
           <a href="#approach" onClick={scrollTo("approach")}>Approach</a>
           <a

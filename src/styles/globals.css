@@ -1240,6 +1240,15 @@ body.page-transitioning::after {
   transition: box-shadow 300ms ease;
 }
 
+@media (max-width: 768px) {
+  .mahoraga-sila-wheel {
+    width: 14rem;
+    height: 14rem;
+    margin-top: -7rem;
+    margin-left: -7rem;
+  }
+}
+
 .sila-wheel-rim {
   position: absolute;
   inset: 0;
@@ -1300,6 +1309,62 @@ body.page-transitioning::after {
   z-index: -1;
 }
 
+@media (max-width: 768px) {
+  .skill-graph-pulse {
+    width: 13.5rem;
+    height: 13.5rem;
+  }
+}
+
+/* --- Welcome Transition Overlay ---------------------------- */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.welcome-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-full);
+}
+
+.welcome-title {
+  font-family: var(--font-display);
+  font-size: clamp(3.8rem, 12vw, 8.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  margin: 0;
+  text-shadow: 0 0 40px color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+
+.welcome-sub {
+  font-family: var(--font-mono, monospace);
+  font-size: var(--text-xs);
+  letter-spacing: 0.15em;
+  color: var(--color-text-muted);
+}
+
 .skill-graph-pulse::after {
   content: "";
   position: absolute;
@@ -1349,19 +1414,18 @@ body.page-transitioning::after {
   transition: filter 0.4s ease, opacity 0.4s ease;
 }
 
-/* SVG lines + skill labels UNBLUR and brighten when name is hovered */
-body[data-name-hover="true"] .skill-graph-svg {
-  filter: blur(0px);
-  opacity: 0.8;
+/* SVG lines + skill labels blur when name is hovered */
+body[data-name-hover="true"] .skill-graph-svg,
+body[data-name-hover="true"] .skill-label-anchor {
+  filter: blur(3px);
+  opacity: 0.35;
 }
 
-body[data-name-hover="true"] .skill-label-anchor {
+/* Central Name and Mahoraga Sila Wheel Ring stay crystal clear */
+body[data-name-hover="true"] .skill-graph-name,
+body[data-name-hover="true"] .mahoraga-sila-wheel {
   filter: blur(0px);
   opacity: 1;
-}
-
-body[data-name-hover="true"] .skill-label {
-  color: var(--color-primary);
 }
 
 /* Navbar blurs slightly */
