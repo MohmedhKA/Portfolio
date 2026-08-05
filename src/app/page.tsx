@@ -7,6 +7,7 @@ import Navbar from "@/src/components/Navbar";
 import SkillGraph from "@/src/components/SkillGraph";
 import Hero from "@/src/components/Hero";
 import Work from "@/src/components/Work";
+import Domains from "@/src/components/Domains";
 import About from "@/src/components/About";
 import MinecraftContact from "@/src/components/MinecraftContact";
 
@@ -47,6 +48,7 @@ export default function PortfolioRoot() {
           <main id="main">
             <SkillGraph />
             <Hero onContactClick={() => setMcContactOpen(true)} />
+            <Domains />
             <Work />
             <About onContactClick={() => setMcContactOpen(true)} />
           </main>

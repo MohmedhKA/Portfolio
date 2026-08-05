@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useCallback, useEffect } from "react";
+import { useRef, useMemo, useCallback, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -53,7 +53,7 @@ function SkillLabel({ skill, springX, springY, hoverSignal }: SkillLabelProps) {
   const px = useTransform(springX, (v) => v * skill.depth * 0.018);
   const py = useTransform(springY, (v) => v * skill.depth * 0.018);
 
-  // Scale up slightly when name is hovered — reads MotionValue, zero re-renders
+  // Scale up slightly when name is hovered
   const labelScale = useTransform(hoverSignal, [0, 1], [1, 1.22]);
 
   return (
@@ -61,7 +61,7 @@ function SkillLabel({ skill, springX, springY, hoverSignal }: SkillLabelProps) {
       className="skill-label-anchor"
       style={{ left: `${skill.pos.x}%`, top: `${skill.pos.y}%` }}
     >
-      {/* Layer 1: float — keyframes baked at compute time, never recreated */}
+      {/* Layer 1: float — keyframes baked at compute time */}
       <motion.span
         animate={{ x: skill.floatX, y: skill.floatY }}
         transition={{
@@ -72,7 +72,7 @@ function SkillLabel({ skill, springX, springY, hoverSignal }: SkillLabelProps) {
           delay: skill.floatDelay,
         }}
       >
-        {/* Layer 2: parallax + scale via MotionValues only, no state */}
+        {/* Layer 2: parallax + scale via MotionValues */}
         <motion.span
           className="skill-label"
           style={{
@@ -90,23 +90,23 @@ function SkillLabel({ skill, springX, springY, hoverSignal }: SkillLabelProps) {
   );
 }
 
+// ─── Mahoraga Sila Wheel Handles (8 Handles at 45° intervals) ─────────────────
+const HANDLE_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315];
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function SkillGraph() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [wheelRotation, setWheelRotation] = useState(0);
+  const [isAdapting, setIsAdapting] = useState(false);
 
-  // Sync container size to a ref — no state, no re-renders
-  useEffect(() => {
-    const update = () => {
-      if (!containerRef.current) return;
-      // Nothing to store here — containerW/H no longer needed after removing pull
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+  const triggerAdaptation = useCallback(() => {
+    setWheelRotation((prev) => prev + 45);
+    setIsAdapting(true);
+    setTimeout(() => setIsAdapting(false), 900);
   }, []);
 
-  // Hover signal — MotionValue only, never setState
+  // Hover signal — MotionValue only
   const hoverSignalRaw = useMotionValue(0);
   const hoverSignal = useSpring(hoverSignalRaw, { stiffness: 200, damping: 22 });
 
@@ -120,7 +120,7 @@ export default function SkillGraph() {
 
   const computed = useMemo(() => computePositions(), []);
 
-  // Handlers — MotionValues + body attribute, never setState
+  // Handlers
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const rect = containerRef.current?.getBoundingClientRect();
@@ -139,7 +139,8 @@ export default function SkillGraph() {
   const handleNameEnter = useCallback(() => {
     hoverSignalRaw.set(1);
     document.body.setAttribute("data-name-hover", "true");
-  }, [hoverSignalRaw]);
+    triggerAdaptation();
+  }, [hoverSignalRaw, triggerAdaptation]);
 
   const handleNameLeave = useCallback(() => {
     hoverSignalRaw.set(0);
@@ -170,28 +171,52 @@ export default function SkillGraph() {
               y1="50"
               x2={skill.pos.x}
               y2={skill.pos.y}
-              stroke="var(--color-border)"
-              strokeWidth="0.8"
+              stroke={isAdapting ? "var(--color-primary)" : "var(--color-border)"}
+              strokeWidth={isAdapting ? "1.2" : "0.8"}
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
+              style={{ transition: "stroke 300ms ease, stroke-width 300ms ease" }}
             />
           ))}
         </motion.svg>
 
-        {/* Center: pulse ring sits BEFORE the name, anchored inside the center div */}
+        {/* Center: Mahoraga Eight-Handled Sila Wheel & Name */}
         <div className="skill-graph-center">
+          <motion.div
+            className={`mahoraga-sila-wheel ${isAdapting ? "mahoraga-wheel--adapting" : ""}`}
+            animate={{ rotate: wheelRotation }}
+            transition={{ type: "spring", stiffness: 120, damping: 14 }}
+            aria-hidden="true"
+          >
+            {/* Outer Sila Wheel Rim Ring */}
+            <div className="sila-wheel-rim" />
+
+            {/* 8 Radial Handles of Mahoraga's Wheel */}
+            {HANDLE_ANGLES.map((angle) => (
+              <div
+                key={angle}
+                className="sila-handle-spoke"
+                style={{ transform: `rotate(${angle}deg)` }}
+              >
+                <span className="sila-handle-knob" />
+              </div>
+            ))}
+          </motion.div>
+
           <div className="skill-graph-pulse" aria-hidden="true" />
+
           <span
             className="skill-graph-name"
             data-text="Mohmedh K A"
             onMouseEnter={handleNameEnter}
             onMouseLeave={handleNameLeave}
+            onClick={triggerAdaptation}
           >
             Mohmedh K A
           </span>
         </div>
 
-        {/* Skill labels — stable keys, never unmount on hover */}
+        {/* Skill labels — perfectly readable and horizontally anchored */}
         {computed.map((skill) => (
           <SkillLabel
             key={skill.label}

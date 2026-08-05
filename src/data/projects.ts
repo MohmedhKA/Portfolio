@@ -23,7 +23,7 @@ export const projects: Project[] = [
       "Hyperledger Fabric internals, Private Data Collections, Byzantine fault tolerance, and cryptographic audit design.",
     github: "https://github.com/MohmedhKA/E-Voting-V2",
     showImage: true,
-    image: "https://github.com/MohmedhKA/E-Voting-V2/blob/main/docs/images/app-screenshot.png?raw=true",
+    image: "/images/Evoting-app.png",
   },
   {
     title: "AutoVulnScan",
