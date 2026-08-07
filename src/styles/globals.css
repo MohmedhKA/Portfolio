@@ -86,11 +86,16 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: 4.5rem;
+  overflow-y: scroll;
+  height: 100%;
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100%;
+  height: 100%;
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: 1.6;
@@ -237,7 +242,9 @@ button {
 
 /* --- Hero -------------------------------------------------- */
 .hero {
-  padding: clamp(var(--space-6), 4vw, var(--space-10)) 0 var(--space-8);
+  padding: clamp(var(--space-8), 5vw, var(--space-12)) 0 var(--space-8);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .hero-grid {
@@ -523,8 +530,10 @@ button {
 
 /* --- Sections ---------------------------------------------- */
 .section {
-  padding: clamp(var(--space-12), 8vw, var(--space-20)) 0;
+  padding: clamp(var(--space-10), 6vw, var(--space-16)) 0;
   border-top: 1px solid var(--color-divider);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .section-head {
@@ -1045,6 +1054,8 @@ body.page-transitioning::after {
   position: relative;
   height: 100vh;
   overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 @supports (animation-timeline: scroll()) {
