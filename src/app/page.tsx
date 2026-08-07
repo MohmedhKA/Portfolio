@@ -10,6 +10,7 @@ import Work from "@/src/components/Work";
 import Domains from "@/src/components/Domains";
 import About from "@/src/components/About";
 import MinecraftContact from "@/src/components/MinecraftContact";
+import BinaryParticleBackground from "@/src/components/BinaryParticleBackground";
 
 export default function PortfolioRoot() {
   const [phase, setPhase] = useState<"splash" | "welcome" | "ready">("splash");
@@ -46,6 +47,9 @@ export default function PortfolioRoot() {
 
   return (
     <>
+      {/* ── Floating Binary Particle Background ─────────────────────── */}
+      <BinaryParticleBackground phase={phase} />
+
       <AnimatePresence mode="wait">
         {/* ── 1. Splash Overlay ────────────────────────────────────── */}
         {phase === "splash" && (

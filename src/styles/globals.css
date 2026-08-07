@@ -86,16 +86,11 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
-  scroll-padding-top: 4.5rem;
-  overflow-y: scroll;
-  height: 100%;
 }
 
 body {
   margin: 0;
-  min-height: 100%;
-  height: 100%;
+  min-height: 100vh;
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: 1.6;
@@ -106,6 +101,17 @@ body {
   /* Custom scrollbar */
   scrollbar-width: thin;
   scrollbar-color: var(--color-primary) transparent;
+}
+
+/* --- Binary Particle Canvas -------------------------------- */
+.binary-particle-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0; /* JS controls opacity and z-index dynamically */
 }
 
 /* Webkit custom scrollbar */
@@ -242,9 +248,7 @@ button {
 
 /* --- Hero -------------------------------------------------- */
 .hero {
-  padding: clamp(var(--space-8), 5vw, var(--space-12)) 0 var(--space-8);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  padding: clamp(var(--space-6), 4vw, var(--space-10)) 0 var(--space-8);
 }
 
 .hero-grid {
@@ -530,10 +534,8 @@ button {
 
 /* --- Sections ---------------------------------------------- */
 .section {
-  padding: clamp(var(--space-10), 6vw, var(--space-16)) 0;
+  padding: clamp(var(--space-12), 8vw, var(--space-20)) 0;
   border-top: 1px solid var(--color-divider);
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 
 .section-head {
@@ -1054,8 +1056,6 @@ body.page-transitioning::after {
   position: relative;
   height: 100vh;
   overflow: hidden;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 
 @supports (animation-timeline: scroll()) {
@@ -1344,7 +1344,7 @@ body.page-transitioning::after {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.2rem;
+  gap: 0.1rem;
 }
 
 .welcome-badge {
@@ -1361,12 +1361,18 @@ body.page-transitioning::after {
 
 .welcome-title {
   font-family: var(--font-display);
-  font-size: clamp(3.8rem, 12vw, 8.5rem);
+  font-size: clamp(3.7rem, 16vw, 12rem);
   font-weight: 700;
+  line-height: 0.9;
   letter-spacing: -0.02em;
+  white-space: nowrap;
   color: var(--color-text);
-  margin: 0;
+  margin: -0.5rem 1;
   text-shadow: 0 0 40px color-mix(in srgb, var(--color-primary) 40%, transparent);
+  /* Hidden — canvas renders binary-particle version of this text */
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
 }
 
 .welcome-sub {

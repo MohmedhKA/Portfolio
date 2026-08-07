@@ -28,13 +28,13 @@ const INITIAL_LOGS: LogEntry[] = [
     id: "2",
     type: "ok",
     label: "[OK]",
-    text: "Connecting Hyperledger Fabric Peer Nodes & Private Data Collections...",
+    text: "Connecting Hyperledger Fabric Peer Nodes & Ledger State...",
   },
   {
     id: "3",
     type: "ok",
     label: "[OK]",
-    text: "Initializing Wireshark Packet Sniffer & Network Analyzer...",
+    text: "Configuring Boids Flocking Algorithm & Particle Dynamics...",
   },
   {
     id: "4",

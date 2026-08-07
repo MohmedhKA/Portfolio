@@ -126,11 +126,11 @@ export default function About({ onContactClick }: AboutProps) {
                 </p>
                 <p className="ct-line ct-line--delay-2">
                   <span className="ct-ok">✓</span>
-                  <span className="ct-muted"> identity verified · ed25519</span>
+                  <span className="ct-muted"> channel encrypted · AES-256-GCM</span>
                 </p>
                 <p className="ct-line ct-line--delay-3">
                   <span className="ct-ok">✓</span>
-                  <span className="ct-muted"> channel encrypted · AES-256-GCM</span>
+                  <span className="ct-muted"> boid flocking engine · active</span>
                 </p>
                 <p className="ct-line ct-line--delay-4">
                   <span className="ct-prompt">~</span>
