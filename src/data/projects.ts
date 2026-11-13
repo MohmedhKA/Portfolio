@@ -26,6 +26,32 @@ export const projects: Project[] = [
     image: "/images/Evoting-app.png",
   },
   {
+    title: "ECDAT",
+    description:
+      "A security tool that inspects repositories to detect cryptographic implementations vulnerable to post-quantum attacks and recommends quantum-safe alternative algorithms.",
+    tags: ["Post-Quantum", "Cryptography", "Security Audit"],
+    year: "2025",
+    techStack: "Python, Cryptography, AST Analysis, NIST PQC Standards",
+    learned:
+      "Post-quantum vulnerability surfaces, Shor's algorithm threat models against asymmetric primitives, and NIST quantum-resistant algorithm migration.",
+    github: "https://github.com/MohmedhKA/ECDAT",
+    showImage: true,
+    image: "https://raw.githubusercontent.com/MohmedhKA/ECDAT/main/docs/APP.png",
+  },
+  {
+    title: "SenBye",
+    description:
+      "A campus marketplace and online auction platform empowering college students to buy and sell pre-owned items from seniors, featuring an AI agent for conversational product search and automated smart bidding.",
+    tags: ["AI Agent", "Auctions", "Full Stack"],
+    year: "2025",
+    techStack: "Next.js, TypeScript, Python, AI Bidding Agent, WebSockets",
+    learned:
+      "Real-time auction synchronization, autonomous bidding engine logic, conversational search matching, and campus marketplace design.",
+    github: "https://github.com/MohmedhKA/SenBye",
+    showImage: true,
+    image: "https://raw.githubusercontent.com/MohmedhKA/SenBye/main/docs/APP.png",
+  },
+  {
     title: "AutoVulnScan",
     description:
       "Automates vulnerability scanning, penetration testing, and security assessment using AI-driven vulnerability detection. Integrates with multiple security tools and provides comprehensive reports.",

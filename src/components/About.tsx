@@ -33,7 +33,7 @@ interface AboutProps {
 const fadeUp = {
   initial: { opacity: 0 },
   whileInView: { opacity: 1 },
-  viewport: { once: true },
+  viewport: { once: true, amount: 0.05 },
   transition: { duration: 0.6, ease: "easeOut" as const },
 };
 
@@ -100,7 +100,7 @@ export default function About({ onContactClick }: AboutProps) {
             className="contact-terminal"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.05 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             {/* Terminal header bar */}

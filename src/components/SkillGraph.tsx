@@ -99,12 +99,18 @@ export default function SkillGraph() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [wheelRotation, setWheelRotation] = useState(0);
   const [isAdapting, setIsAdapting] = useState(false);
+  const [showAnimatedBg, setShowAnimatedBg] = useState(false);
 
   const triggerAdaptation = useCallback(() => {
     setWheelRotation((prev) => prev + 45);
     setIsAdapting(true);
     setTimeout(() => setIsAdapting(false), 900);
   }, []);
+
+  const handleNameClick = useCallback(() => {
+    triggerAdaptation();
+    setShowAnimatedBg((prev) => !prev);
+  }, [triggerAdaptation]);
 
   // Hover signal — MotionValue only
   const hoverSignalRaw = useMotionValue(0);
@@ -151,7 +157,8 @@ export default function SkillGraph() {
     <section className="skill-graph-wrapper">
       <div
         ref={containerRef}
-        className="skill-graph"
+        className={`skill-graph ${showAnimatedBg ? "skill-graph--animated" : ""}`}
+        data-animated-bg={showAnimatedBg ? "true" : "false"}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         aria-label="Skill map"
@@ -210,7 +217,7 @@ export default function SkillGraph() {
             data-text="Mohmedh K A"
             onMouseEnter={handleNameEnter}
             onMouseLeave={handleNameLeave}
-            onClick={triggerAdaptation}
+            onClick={handleNameClick}
           >
             Mohmedh K A
           </span>

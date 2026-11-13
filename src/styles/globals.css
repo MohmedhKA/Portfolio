@@ -43,10 +43,10 @@
   --color-text: #241d14;
   --color-text-muted: #726557;
   --color-text-faint: #aa9d90;
-  --color-primary: #b66a12;
-  --color-primary-hover: #98560d;
-  --color-primary-soft: #ead6bd;
-  --color-text-inverse: #fff8ee;
+  --color-primary: #15803d;
+  --color-primary-hover: #166534;
+  --color-primary-soft: #dcfce7;
+  --color-text-inverse: #ffffff;
   --shadow-sm: 0 1px 2px rgba(43, 31, 16, 0.06);
   --shadow-md: 0 12px 32px rgba(43, 31, 16, 0.08);
   --radius-sm: 0.5rem;
@@ -103,15 +103,46 @@ body {
   scrollbar-color: var(--color-primary) transparent;
 }
 
-/* --- Binary Particle Canvas -------------------------------- */
-.binary-particle-canvas {
+/* --- WebGL2 Bits Grassland Field Background ----------------- */
+#st {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
   pointer-events: none;
-  z-index: 0;
-  opacity: 0; /* JS controls opacity and z-index dynamically */
+  background: radial-gradient(110% 38% at 50% 45%, rgba(216, 150, 58, 0.2), transparent 70%),
+              radial-gradient(90% 60% at 50% 100%, rgba(216, 150, 58, 0.05), transparent 70%),
+              #13100c;
+  transition: background 0.6s ease;
+}
+
+[data-theme="light"] #st {
+  /* Bright daytime sky with gentle blue and meadow gradients */
+  background: radial-gradient(110% 45% at 50% 30%, rgba(185, 225, 255, 0.45), transparent 70%),
+              radial-gradient(90% 60% at 50% 100%, rgba(160, 220, 180, 0.25), transparent 70%),
+              #fbf7ee;
+}
+
+#st canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#v {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 55%, transparent 58%, rgba(0, 0, 0, 0.55)),
+              repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.13) 0 1px, transparent 1px 3px);
+  transition: opacity 0.5s ease;
+}
+
+[data-theme="light"] #v {
+  opacity: 0.15;
 }
 
 /* Webkit custom scrollbar */
@@ -1080,11 +1111,19 @@ body.page-transitioning::after {
   overflow: hidden;
   display: grid;
   place-items: center;
-  /* Fine grid — matches editorial reference */
+  /* Default background: dark / solid opaque background with fine grid */
+  background-color: var(--color-bg);
   background-image:
     linear-gradient(var(--color-divider) 1px, transparent 1px),
     linear-gradient(90deg, var(--color-divider) 1px, transparent 1px);
   background-size: 52px 52px;
+  transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skill-graph[data-animated-bg="true"],
+.skill-graph.skill-graph--animated {
+  /* Switch to newer animated background: transparent so the grassland canvas shines through */
+  background-color: transparent;
 }
 
 
@@ -1331,55 +1370,213 @@ body.page-transitioning::after {
 .welcome-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9990;
-  background: var(--color-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 2rem;
+  z-index: 9996;
+  background: transparent;
+  pointer-events: none;
 }
 
 .welcome-content {
+  position: absolute;
+  top: 52%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.1rem;
+  justify-content: center;
+  text-align: center;
+  padding: 0 1.5rem;
 }
 
 .welcome-badge {
-  font-family: var(--font-mono, monospace);
+  font-family: var(--font-body);
   font-size: var(--text-xs);
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   color: var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
-  padding: 0.35rem 0.9rem;
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  padding: 0.45rem 1.25rem;
   border-radius: var(--radius-full);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--color-primary) 25%, transparent);
+  margin-bottom: clamp(1rem, 2.5vh, 2.2rem);
+}
+
+.welcome-spacer {
+  height: clamp(140px, 24vh, 220px);
+  width: 100%;
+  pointer-events: none;
+  flex-shrink: 0;
 }
 
 .welcome-title {
-  font-family: var(--font-display);
-  font-size: clamp(3.7rem, 16vw, 12rem);
-  font-weight: 700;
-  line-height: 0.9;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  color: var(--color-text);
-  margin: -0.5rem 1;
-  text-shadow: 0 0 40px color-mix(in srgb, var(--color-primary) 40%, transparent);
-  /* Hidden — canvas renders binary-particle version of this text */
+  /* Hidden in DOM — canvas renders the glowing binary bit-text version */
   opacity: 0;
   pointer-events: none;
   user-select: none;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 .welcome-sub {
-  font-family: var(--font-mono, monospace);
+  font-family: var(--font-body);
   font-size: var(--text-xs);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.16em;
   color: var(--color-text-muted);
+  text-shadow: 0 0 16px rgba(0, 0, 0, 0.95);
+  margin-top: clamp(1rem, 2.5vh, 2.2rem);
+}
+
+/* --- Text Contrast Protection over Animated Background ----- */
+.hero h1,
+.hero .eyebrow,
+.hero p,
+.hero-meta-col span,
+.meta-item span,
+.meta-item strong,
+.section-title,
+.section-head p {
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95);
+}
+
+[data-theme="light"] .hero h1,
+[data-theme="light"] .hero .eyebrow,
+[data-theme="light"] .hero p,
+[data-theme="light"] .hero-meta-col span,
+[data-theme="light"] .meta-item span,
+[data-theme="light"] .meta-item strong,
+[data-theme="light"] .section-title,
+[data-theme="light"] .section-head p {
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.95), 0 1px 3px rgba(255, 255, 255, 0.95);
+}
+
+/* --- Light Theme Green Headings, Accents & Buttons --- */
+[data-theme="light"] .eyebrow,
+[data-theme="light"] .mini-label,
+[data-theme="light"] .project-tag,
+[data-theme="light"] .hero-tab--active,
+[data-theme="light"] .brand-mark,
+[data-theme="light"] .brand span {
+  color: #15803d;
+}
+
+[data-theme="light"] .hero h1,
+[data-theme="light"] .section-title,
+[data-theme="light"] .about-copy h2,
+[data-theme="light"] .principles h2,
+[data-theme="light"] .project-card h3 {
+  color: #14532d;
+}
+
+[data-theme="light"] .welcome-badge {
+  color: #15803d;
+  background: rgba(21, 128, 61, 0.12);
+  border-color: rgba(21, 128, 61, 0.35);
+  box-shadow: 0 0 24px rgba(21, 128, 61, 0.25);
+}
+
+[data-theme="light"] .btn-primary {
+  background: #15803d;
+  color: #ffffff;
+  border-color: transparent;
+}
+
+[data-theme="light"] .btn-primary:hover {
+  background: #166534;
+}
+
+.hero,
+.section {
+  position: relative;
+  z-index: 1;
+}
+
+/* Prevent bottom sections from staying transparent on scroll */
+.about-copy,
+.principles,
+.contact-terminal,
+.project-card {
+  opacity: 1 !important;
+}
+
+/* --- Landscape / Full Background View Mode --- */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.landscape-toggle {
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--color-text-muted);
+  transition: all var(--transition-interactive);
+}
+
+.landscape-toggle:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: scale(1.04);
+}
+
+.landscape-toggle--active {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--color-primary) 35%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+}
+
+.landscape-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.landscape-hint {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.65rem 1.4rem;
+  background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  font-size: var(--text-xs);
+  color: var(--color-text);
+  pointer-events: auto;
+}
+
+.landscape-return-btn {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 0.4rem 1rem;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition-interactive);
+  white-space: nowrap;
+}
+
+.landscape-return-btn:hover {
+  background: var(--color-primary-hover);
 }
 
 .skill-graph-pulse::after {

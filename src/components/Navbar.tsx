@@ -1,17 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 
 interface NavbarProps {
   onContactClick?: () => void;
+  landscapeMode?: boolean;
+  onToggleLandscape?: () => void;
 }
 
-export default function Navbar({ onContactClick }: NavbarProps) {
+const emptySubscribe = () => () => {};
+
+export default function Navbar({ onContactClick, landscapeMode, onToggleLandscape }: NavbarProps) {
   const { resolvedTheme, setTheme } = useTheme();
-  // Avoid hydration mismatch — icon only renders after mount
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // Avoid hydration mismatch without cascading renders
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   const isDark = resolvedTheme === "dark";
 
@@ -94,56 +101,86 @@ export default function Navbar({ onContactClick }: NavbarProps) {
           </a>
         </nav>
 
-        {/* Theme toggle */}
-        <button
-          id="theme-toggle"
-          className="theme-toggle"
-          type="button"
-          onClick={toggleTheme}
-          aria-label={
-            mounted
-              ? isDark
-                ? "Switch to light mode"
-                : "Switch to dark mode"
-              : "Toggle theme"
-          }
-        >
-          {/* Only render icon after mount to match SSR output */}
-          {mounted && (
-            isDark ? (
-              /* Sun — shown in dark mode */
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="5" />
-                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-              </svg>
-            ) : (
-              /* Moon — shown in light mode */
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-              </svg>
-            )
-          )}
-        </button>
+        <div className="nav-actions">
+          {/* Theme toggle */}
+          <button
+            id="theme-toggle"
+            className="theme-toggle"
+            type="button"
+            onClick={toggleTheme}
+            aria-label={
+              mounted
+                ? isDark
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"
+                : "Toggle theme"
+            }
+          >
+            {/* Only render icon after mount to match SSR output */}
+            {mounted && (
+              isDark ? (
+                /* Sun — shown in dark mode */
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="5" />
+                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                </svg>
+              ) : (
+                /* Moon — shown in light mode */
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              )
+            )}
+          </button>
+
+          {/* Cozy Landscape View Mode Toggle */}
+          <button
+            id="landscape-toggle"
+            className={`landscape-toggle ${landscapeMode ? "landscape-toggle--active" : ""}`}
+            type="button"
+            onClick={onToggleLandscape}
+            aria-label={landscapeMode ? "Exit landscape view" : "View animated landscape without interruption"}
+            title={landscapeMode ? "Exit landscape view" : "View animated landscape"}
+          >
+            {/* Cozy scenery icon: rolling hills, mountains, and sun */}
+            <svg
+              width="19"
+              height="19"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 18l5.5-6.5a1.2 1.2 0 0 1 1.8 0L14 16" />
+              <path d="M12.5 14l2.5-3a1.2 1.2 0 0 1 1.8 0L21 17.5" />
+              <circle cx="17.5" cy="6.5" r="2.5" />
+              <path d="M2 20h20" />
+            </svg>
+          </button>
+        </div>
 
       </div>
     </header>
