@@ -119,10 +119,9 @@ body {
 }
 
 [data-theme="light"] #st {
-  /* Soft, warm daylight meadow background */
-  background: radial-gradient(110% 45% at 50% 30%, rgba(185, 225, 255, 0.25), transparent 70%),
-              radial-gradient(90% 60% at 50% 100%, rgba(160, 220, 180, 0.12), transparent 70%),
-              #f5f0e7;
+  /* Crisp daylight sky: serene cyan-blue upper atmosphere graduating into soft meadow haze */
+  background: radial-gradient(110% 50% at 50% 18%, rgba(142, 202, 252, 0.75), transparent 75%),
+              linear-gradient(180deg, #cae9f8 0%, #e8f4fc 32%, #f2f7ec 60%, #edf5e6 100%);
 }
 
 #st canvas {

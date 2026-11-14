@@ -193,8 +193,8 @@ void main(){
  float a=texture(uTex,vec2((col+p.x)/8.,(row+p.y)/8.),vT.w).a*vT.z;
  if(a<.04)discard;
  vec3 cDark = vC;
- // In light mode: fluffy white clouds (vT.w > 1.2) or dark swift birds
- vec3 cLight = vT.w > 1.2 ? vec3(0.96, 0.98, 1.0) : vec3(0.18, 0.20, 0.24);
+ // In light mode: defined fluffy white-silver clouds (vT.w > 1.2) or dark swift birds
+ vec3 cLight = vT.w > 1.2 ? vec3(0.88, 0.93, 0.98) : vec3(0.18, 0.20, 0.24);
  vec3 c = mix(cDark, cLight, uLight);
  o=vec4(c*a,a);
 }`;
