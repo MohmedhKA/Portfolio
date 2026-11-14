@@ -34,7 +34,7 @@ export default function RootLayout({
       className={`${instrumentSerif.variable} ${manrope.variable}`}
     >
       <body>
-        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
           {children}
         </ThemeProvider>
       </body>
