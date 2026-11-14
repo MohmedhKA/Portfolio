@@ -111,6 +111,7 @@ body {
   height: 100vh;
   overflow: hidden;
   pointer-events: none;
+  z-index: 0;
   background: radial-gradient(110% 38% at 50% 45%, rgba(216, 150, 58, 0.2), transparent 70%),
               radial-gradient(90% 60% at 50% 100%, rgba(216, 150, 58, 0.05), transparent 70%),
               #13100c;
@@ -118,10 +119,10 @@ body {
 }
 
 [data-theme="light"] #st {
-  /* Bright daytime sky with gentle blue and meadow gradients */
-  background: radial-gradient(110% 45% at 50% 30%, rgba(185, 225, 255, 0.45), transparent 70%),
-              radial-gradient(90% 60% at 50% 100%, rgba(160, 220, 180, 0.25), transparent 70%),
-              #fbf7ee;
+  /* Soft, warm daylight meadow background */
+  background: radial-gradient(110% 45% at 50% 30%, rgba(185, 225, 255, 0.25), transparent 70%),
+              radial-gradient(90% 60% at 50% 100%, rgba(160, 220, 180, 0.12), transparent 70%),
+              #f5f0e7;
 }
 
 #st canvas {
@@ -142,7 +143,9 @@ body {
 }
 
 [data-theme="light"] #v {
-  opacity: 0.15;
+  opacity: 0.35;
+  background: radial-gradient(ellipse at 50% 55%, transparent 48%, rgba(36, 29, 20, 0.12)),
+              repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 3px);
 }
 
 /* Webkit custom scrollbar */
@@ -365,15 +368,17 @@ button {
 .meta-item span {
   display: block;
   font-size: var(--text-xs);
-  color: var(--color-text-faint);
+  color: var(--color-primary);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   margin-bottom: 0.45rem;
 }
 
 .meta-item strong {
   font-size: var(--text-sm);
   color: var(--color-text);
+  font-weight: 600;
 }
 
 /* --- Hero card --------------------------------------------- */
@@ -1430,17 +1435,28 @@ body.page-transitioning::after {
 }
 
 /* --- Text Contrast Protection over Animated Background ----- */
-.hero h1,
-.hero .eyebrow,
-.hero p,
-.hero-meta-col span,
-.meta-item span,
-.meta-item strong,
-.section-title,
-.section-head p {
+[data-theme="dark"] .hero h1,
+[data-theme="dark"] .hero .eyebrow,
+[data-theme="dark"] .hero p,
+[data-theme="dark"] .hero-meta-col span,
+[data-theme="dark"] .meta-item span,
+[data-theme="dark"] .meta-item strong,
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .section-head p {
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95);
 }
 
+[data-theme="dark"] .meta-item strong {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .hero p,
+[data-theme="dark"] .section-head p {
+  color: #f5ede0;
+  font-weight: 500;
+}
+
+/* Light Theme Contrast Halo: Soft ambient cloud glow directly hugging the glyphs */
 [data-theme="light"] .hero h1,
 [data-theme="light"] .hero .eyebrow,
 [data-theme="light"] .hero p,
@@ -1449,25 +1465,41 @@ body.page-transitioning::after {
 [data-theme="light"] .meta-item strong,
 [data-theme="light"] .section-title,
 [data-theme="light"] .section-head p {
-  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.95), 0 1px 3px rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 12px rgba(236, 227, 214, 0.65), 0 0 6px rgba(236, 227, 214, 0.6), 0 1px 2px rgba(236, 227, 214, 0.55);
 }
 
-/* --- Light Theme Green Headings, Accents & Buttons --- */
+/* --- Light Theme: Crisp Ink Contrast for Text & Headings --- */
+[data-theme="light"] .hero h1 {
+  color: #1a1612;
+}
+
+[data-theme="light"] .hero p,
+[data-theme="light"] .section-head p {
+  color: #241d14;
+  font-weight: 600;
+  line-height: 1.65;
+}
+
+[data-theme="light"] .meta-item strong {
+  color: #1a1612;
+  font-weight: 700;
+}
+
+/* --- Light Theme: ONLY switch orange accent tokens to green --- */
 [data-theme="light"] .eyebrow,
 [data-theme="light"] .mini-label,
 [data-theme="light"] .project-tag,
 [data-theme="light"] .hero-tab--active,
 [data-theme="light"] .brand-mark,
-[data-theme="light"] .brand span {
+[data-theme="light"] .meta-item span {
   color: #15803d;
 }
 
-[data-theme="light"] .hero h1,
-[data-theme="light"] .section-title,
-[data-theme="light"] .about-copy h2,
-[data-theme="light"] .principles h2,
-[data-theme="light"] .project-card h3 {
-  color: #14532d;
+/* Heading/brand name in black in light theme, untouched in dark theme */
+[data-theme="light"] .brand span,
+[data-theme="light"] .skill-graph-name,
+[data-theme="light"] .hero-profile-name {
+  color: #1a1612;
 }
 
 [data-theme="light"] .welcome-badge {
@@ -1485,6 +1517,15 @@ body.page-transitioning::after {
 
 [data-theme="light"] .btn-primary:hover {
   background: #166534;
+}
+
+/* --- Seamless Transition Veil between Welcome & SkillGraph --- */
+.transition-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  background: var(--color-bg);
+  pointer-events: none;
 }
 
 .hero,
@@ -1543,12 +1584,17 @@ body.page-transitioning::after {
 
 .landscape-hint {
   position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 2.5rem;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: max-content;
+  max-width: 90vw;
   z-index: 999;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1.25rem;
   padding: 0.65rem 1.4rem;
   background: color-mix(in srgb, var(--color-surface) 90%, transparent);
@@ -2867,7 +2913,44 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   min-height: 340px;
-  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 350ms ease, border-color 350ms ease, background 350ms ease;
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 350ms ease, border-color 350ms ease;
+}
+
+.domain-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at top right, var(--domain-glow, rgba(6, 182, 212, 0.14)), transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 300ms ease;
+}
+
+/* Card 01: Glow on TOP LEFT corner */
+.domain-card--crypto::before {
+  background: radial-gradient(circle at top left, var(--domain-glow, rgba(6, 182, 212, 0.15)), transparent 70%);
+}
+
+/* Card 02: Glow on TOP RIGHT corner */
+.domain-card--network::before {
+  background: radial-gradient(circle at top right, var(--domain-glow, rgba(60, 208, 112, 0.15)), transparent 70%);
+}
+
+/* Card 03: Glow on TOP RIGHT corner */
+.domain-card--blockchain::before {
+  background: radial-gradient(circle at top right, var(--domain-glow, rgba(245, 158, 11, 0.15)), transparent 70%);
+}
+
+/* Card 04: Glow on BOTTOM RIGHT corner */
+.domain-card--system::before {
+  background: radial-gradient(circle at bottom right, var(--domain-glow, rgba(59, 130, 246, 0.15)), transparent 70%);
+}
+
+.domain-card:hover::before,
+.domain-card.domain-card--spotlight::before {
+  opacity: 1;
 }
 
 .domain-card-header {
@@ -2900,6 +2983,7 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
    ============================================================ */
 .domain-card--crypto {
   --domain-accent: #06b6d4;
+  --domain-glow: rgba(6, 182, 212, 0.15);
 }
 
 .domain-card--crypto .domain-number { color: #06b6d4; }
@@ -2914,7 +2998,6 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
   border-color: #06b6d4;
   box-shadow: 0 0 30px rgba(6, 182, 212, 0.25), var(--shadow-md);
   transform: translateY(-4px);
-  background: radial-gradient(circle at top left, rgba(6, 182, 212, 0.1), var(--color-surface) 65%);
 }
 
 .crypto-matrix-bg {
@@ -2985,6 +3068,7 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
    ============================================================ */
 .domain-card--network {
   --domain-accent: #3cd070;
+  --domain-glow: rgba(60, 208, 112, 0.15);
 }
 
 .domain-card--network .domain-number { color: #3cd070; }
@@ -2999,7 +3083,6 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
   border-color: #3cd070;
   box-shadow: 0 0 30px rgba(60, 208, 112, 0.25), var(--shadow-md);
   transform: translateY(-4px);
-  background: radial-gradient(circle at top right, rgba(60, 208, 112, 0.1), var(--color-surface) 65%);
 }
 
 .network-radar-bg {
@@ -3084,6 +3167,7 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
    ============================================================ */
 .domain-card--blockchain {
   --domain-accent: #f59e0b;
+  --domain-glow: rgba(245, 158, 11, 0.15);
 }
 
 .domain-card--blockchain .domain-number { color: #f59e0b; }
@@ -3098,7 +3182,6 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
   border-color: #f59e0b;
   box-shadow: 0 0 30px rgba(245, 158, 11, 0.25), var(--shadow-md);
   transform: translateY(-4px);
-  background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.1), var(--color-surface) 65%);
 }
 
 .blockchain-chain-bg {
@@ -3167,6 +3250,7 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
    ============================================================ */
 .domain-card--system {
   --domain-accent: #3b82f6;
+  --domain-glow: rgba(59, 130, 246, 0.15);
 }
 
 .domain-card--system .domain-number { color: #3b82f6; }
@@ -3181,7 +3265,6 @@ body[data-name-hover="true"] .skill-graph-pulse::after {
   border-color: #3b82f6;
   box-shadow: 0 0 30px rgba(59, 130, 246, 0.25), var(--shadow-md);
   transform: translateY(-4px);
-  background: radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.1), var(--color-surface) 65%);
 }
 
 .system-stack-bg {

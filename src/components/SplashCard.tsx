@@ -257,9 +257,9 @@ export default function SplashCard({ onDismiss }: SplashCardProps) {
   return (
     <motion.div
       className="splash-overlay"
-      initial={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: "-100%" }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="splash-card">
         {/* Terminal Header */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SplashCard from "@/src/components/SplashCard";
 import Navbar from "@/src/components/Navbar";
@@ -16,6 +16,8 @@ export default function PortfolioRoot() {
   const [phase, setPhase] = useState<"splash" | "welcome" | "ready">("splash");
   const [mcContactOpen, setMcContactOpen] = useState(false);
   const [landscapeMode, setLandscapeMode] = useState(false);
+  const [transitioning, setTransitioning] = useState(false);
+  const savedScrollRef = useRef(0);
 
   // Prevent body scrolling while splash or welcome screen is active
   useEffect(() => {
@@ -23,7 +25,7 @@ export default function PortfolioRoot() {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
       document.body.style.touchAction = "none";
-    } else {
+    } else if (!landscapeMode) {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
       document.body.style.touchAction = "";
@@ -34,17 +36,65 @@ export default function PortfolioRoot() {
       document.documentElement.style.overflow = "";
       document.body.style.touchAction = "";
     };
-  }, [phase]);
+  }, [phase, landscapeMode]);
 
-  // Transition from Welcome screen -> Main portfolio (held for 2.6 seconds)
+  // Isolate landscape mode: lock body scroll, infinite explore, restore exact scroll on return
+  useEffect(() => {
+    if (landscapeMode) {
+      savedScrollRef.current = window.scrollY;
+      document.body.classList.add("landscape-active");
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.classList.remove("landscape-active");
+      if (phase === "ready") {
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        window.scrollTo({ top: savedScrollRef.current, behavior: "instant" });
+      }
+    }
+
+    return () => {
+      document.body.classList.remove("landscape-active");
+    };
+  }, [landscapeMode, phase]);
+
+  // Transition from Welcome screen -> Main portfolio cleanly with guaranteed veil removal
   useEffect(() => {
     if (phase === "welcome") {
-      const timer = setTimeout(() => {
+      // 1. Fade veil in shortly before welcome finishes (2.2s)
+      const veilTimer = setTimeout(() => {
+        setTransitioning(true);
+      }, 2200);
+
+      // 2. Switch to ready mode (2.6s)
+      const readyTimer = setTimeout(() => {
         setPhase("ready");
       }, 2600);
-      return () => clearTimeout(timer);
+
+      return () => {
+        clearTimeout(veilTimer);
+        clearTimeout(readyTimer);
+      };
+    } else if (phase === "ready") {
+      // When ready phase mounts, lift the transition veil after a brief 250ms cross-fade
+      const liftTimer = setTimeout(() => {
+        setTransitioning(false);
+      }, 250);
+
+      return () => {
+        clearTimeout(liftTimer);
+        setTransitioning(false);
+      };
     }
   }, [phase]);
+
+  function handleContactSuccess() {
+    setMcContactOpen(false);
+    setTimeout(() => {
+      setLandscapeMode(true);
+    }, 400);
+  }
 
   return (
     <>
@@ -142,10 +192,21 @@ export default function PortfolioRoot() {
         )}
       </AnimatePresence>
 
+      {/* ── Seamless Transition Veil (between Welcome & SkillGraph) ── */}
+      <motion.div
+        className="transition-veil"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: transitioning ? 1 : 0 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        style={{ pointerEvents: transitioning ? "auto" : "none" }}
+        aria-hidden="true"
+      />
+
       {/* ── Minecraft Contact Overlay ───────────────────────────── */}
       <MinecraftContact
         open={mcContactOpen}
         onClose={() => setMcContactOpen(false)}
+        onSuccess={handleContactSuccess}
       />
     </>
   );

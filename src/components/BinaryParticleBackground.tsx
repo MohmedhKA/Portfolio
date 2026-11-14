@@ -111,11 +111,11 @@ void main(){
  cDark=mix(cDark,vec3(1.,.9,.55),vA.y);
  cDark*=(.82+.2*vA.z)*vB.z;
 
- // Light Mode: Vibrant lush green meadow palette
- vec3 cLight=mix(vec3(.10,.45,.15),vec3(.22,.70,.20),smoothstep(0.,.35,s));
- cLight=mix(cLight,vec3(.48,.86,.30),smoothstep(.6,1.,s));
- cLight=mix(cLight,vec3(.15,.55,.18)*(.8+.5*s),vB.y*.25);
- cLight=mix(cLight,vec3(.85,.95,.55),vA.y);
+ // Light Mode: Calm, refined natural meadow palette (low-glare, high text contrast)
+ vec3 cLight=mix(vec3(.12,.40,.16),vec3(.18,.50,.20),smoothstep(0.,.35,s));
+ cLight=mix(cLight,vec3(.28,.60,.24),smoothstep(.6,1.,s));
+ cLight=mix(cLight,vec3(.14,.46,.16)*(.8+.5*s),vB.y*.25);
+ cLight=mix(cLight,vec3(.42,.68,.30),vA.y);
  cLight*=(.82+.2*vA.z)*vB.z;
 
  vec3 c=mix(cDark,cLight,uLight)*uL;
@@ -138,12 +138,12 @@ void main(){
 
     const TF = `#version 300 es
 precision highp float;
-in vec4 v;uniform float uK,uLight;out vec4 o;
+in vec4 v;uniform float uK,uLight,uL;out vec4 o;
 float hs(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hs(i),hs(i+vec2(1,0)),f.x),mix(hs(i+vec2(0,1)),hs(i+vec2(1,1)),f.x),f.y);}
 float hs2(vec2 p){return fract(sin(dot(mod(p,257.),vec2(12.9898,78.233)))*43758.5453);}
 const vec3 PL_DARK[5]=vec3[5](vec3(.43,.27,.085),vec3(.5,.32,.1),vec3(.58,.38,.12),vec3(.66,.44,.14),vec3(.74,.5,.17));
-const vec3 PL_LIGHT[5]=vec3[5](vec3(.18,.48,.18),vec3(.24,.58,.22),vec3(.32,.68,.25),vec3(.40,.75,.30),vec3(.48,.82,.35));
+const vec3 PL_LIGHT[5]=vec3[5](vec3(.14,.36,.14),vec3(.18,.44,.17),vec3(.24,.50,.20),vec3(.28,.56,.22),vec3(.32,.60,.25));
 void main(){
  float zr=v.y,cs=.125*exp2(floor(log2(max(1.,zr/6.))));
  vec2 c0=floor(v.zw/cs),c1=floor(v.zw/(cs*8.));
@@ -156,8 +156,8 @@ void main(){
  cDark=mix(cDark,mix(PL_DARK[1],PL_DARK[3],sm)*(.7+.4*v.x),smoothstep(22.,80.,zr));
  cDark=mix(cDark,vec3(.42,.28,.11),smoothstep(60.,240.,zr));
  cLight=mix(cLight,mix(PL_LIGHT[1],PL_LIGHT[3],sm)*(.7+.4*v.x),smoothstep(22.,80.,zr));
- cLight=mix(cLight,vec3(.85,.92,.82),smoothstep(60.,240.,zr));
- vec3 c=mix(cDark,cLight,uLight);
+ cLight=mix(cLight,vec3(.18,.44,.16),smoothstep(60.,240.,zr));
+ vec3 c=mix(cDark,cLight,uLight)*uL;
  o=vec4(c*uK,uK);
 }`;
 
@@ -245,7 +245,7 @@ void main(){
       "uLight",
     ].forEach((n) => (UB[n] = gl.getUniformLocation(PB, n)));
 
-    ["uCam", "uF", "uHz", "uAsp", "uSx", "uK", "uLight"].forEach(
+    ["uCam", "uF", "uHz", "uAsp", "uSx", "uK", "uLight", "uL"].forEach(
       (n) => (UT[n] = gl.getUniformLocation(PT, n))
     );
 
@@ -576,26 +576,30 @@ void main(){
       }
     }
 
-    // ── 2D Intro Sprites ──────────────────────────────────────────────────
-    const SP = ["#d8963a", "#f2b963", "#ffe4b4"].map((col, h) =>
-      [0, 1].map((b) => {
-        const c = document.createElement("canvas");
-        c.width = c.height = 40 * D;
-        const x = c.getContext("2d");
-        if (x) {
-          x.font = `${24 * D}px ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace`;
-          x.textAlign = "center";
-          x.textBaseline = "middle";
-          x.fillStyle = col;
-          if (h) {
-            x.shadowColor = col;
-            x.shadowBlur = h * 6 * D;
+    // ── 2D Intro Sprites (Dual Palette: Amber for Dark mode, Green for Light mode) ──
+    const makeSprites = (colors: string[]) =>
+      colors.map((col, h) =>
+        [0, 1].map((b) => {
+          const c = document.createElement("canvas");
+          c.width = c.height = 40 * D;
+          const x = c.getContext("2d");
+          if (x) {
+            x.font = `${24 * D}px ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace`;
+            x.textAlign = "center";
+            x.textBaseline = "middle";
+            x.fillStyle = col;
+            if (h) {
+              x.shadowColor = col;
+              x.shadowBlur = h * 6 * D;
+            }
+            x.fillText(String(b), 20 * D, 21 * D);
           }
-          x.fillText(String(b), 20 * D, 21 * D);
-        }
-        return c;
-      })
-    );
+          return c;
+        })
+      );
+
+    const SP_DARK = makeSprites(["#d8963a", "#f2b963", "#ffe4b4"]);
+    const SP_LIGHT = makeSprites(["#15803d", "#22c55e", "#86efac"]);
 
     const BS = [..."WELCOME"]
       .map((c) => c.charCodeAt(0).toString(2).padStart(8, "0"))
@@ -888,9 +892,10 @@ void main(){
           }
 
           const w = (40 * sz) / 24;
+          const activeSP = currentLight > 0.5 ? SP_LIGHT : SP_DARK;
           o2!.globalAlpha = al > 1 ? 1 : al;
           o2!.drawImage(
-            SP[hv > 0.65 ? 2 : hv > 0.25 ? 1 : 0][bit],
+            activeSP[hv > 0.65 ? 2 : hv > 0.25 ? 1 : 0][bit],
             x - w / 2,
             y - w / 2,
             w,
@@ -901,7 +906,10 @@ void main(){
         const ra = t - TP;
         if (ra > 0 && ra < 1.4) {
           o2!.globalAlpha = 1;
-          o2!.strokeStyle = `rgba(255,214,150,${(1 - ra / 1.4) * 0.55})`;
+          o2!.strokeStyle =
+            currentLight > 0.5
+              ? `rgba(34,197,94,${(1 - ra / 1.4) * 0.55})`
+              : `rgba(255,214,150,${(1 - ra / 1.4) * 0.55})`;
           o2!.lineWidth = 2;
           o2!.beginPath();
           o2!.arc(W / 2, TCY, ra * 1400, 0, TAU);
@@ -913,14 +921,21 @@ void main(){
       // Smoothly interpolate theme light level: 0.0 = dark amber, 1.0 = bright green meadow
       currentLight += (targetLight - currentLight) * (1 - M.exp(-dt * 8));
 
-      // Emerges only during the bit-burst (t >= TP) or in ready phase (prevents jump before SkillGraph)
-      const em = currentPhase === "ready" ? 2.0 : (t >= TP ? M.min(2.0, (t - TP) * 2.5) : -2.0);
+      // Grass field emerges only in ready phase — keeps splash and welcome completely clean
+      const em = currentPhase === "ready" ? 2.0 : -2.0;
 
       // Contrast calibrated ambient level:
-      // Dark mode: 0.52 (warm deep amber night, allowing portfolio text to pop)
-      // Light mode: 0.85 (fresh luminous green meadow)
+      // Dark mode: 0.58 (gently lifted brightness from 0.52 so blades are rich and visible)
+      // Light mode: 0.42 (soft, low-glare meadow keeping text perfectly readable)
       // Burst phase: 1.0 (intense welcome explosion)
-      const targetL = currentPhase === "ready" ? (currentLight > 0.5 ? 0.85 : 0.52) : 1.0;
+      // NOTE: You can tweak these two values directly to test different brightness variants!
+      const DARK_BRIGHTNESS = 0.68;  // <- increase or decrease dark theme grass brightness
+      const LIGHT_BRIGHTNESS = 0.82; // <- increase or decrease light theme grass brightness
+
+      const targetL =
+        currentPhase === "ready"
+          ? (currentLight > 0.5 ? LIGHT_BRIGHTNESS : DARK_BRIGHTNESS)
+          : 1.0;
 
       if (em > 0) {
         if (t > TP + 0.3 || currentPhase === "ready") tgt += 0.75 * dt;
@@ -985,7 +1000,8 @@ void main(){
         gl.uniform1f(UT.uAsp, asp);
         gl.uniform1f(UT.uSx, sxs);
         gl.uniform1f(UT.uLight, currentLight);
-        gl.uniform1f(UT.uK, M.min(1, M.max(0, em * 1.2)) * targetL);
+        gl.uniform1f(UT.uL, currentLight > 0.5 ? targetL * 0.95 : 1.0);
+        gl.uniform1f(UT.uK, M.min(1, M.max(0, em * 1.2)));
         gl.bindVertexArray(vaoT);
         gl.drawElements(gl.TRIANGLES, ti.length, gl.UNSIGNED_SHORT, 0);
 
@@ -1092,12 +1108,23 @@ void main(){
       tgt += M.max(-1.0, M.min(1.0, dy * 0.0035));
     };
 
+    const onWheel = (e: WheelEvent) => {
+      // In landscape mode, wheel events directly advance field camera infinitely
+      const isLandscape =
+        document.body.classList.contains("landscape-active") ||
+        document.getElementById("main")?.classList.contains("landscape-hidden");
+      if (isLandscape) {
+        tgt += e.deltaY * 0.0035;
+      }
+    };
+
     let rz: NodeJS.Timeout;
     const onResize = () => {
       clearTimeout(rz);
       rz = setTimeout(build, 150);
     };
 
+    window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
@@ -1117,6 +1144,7 @@ void main(){
       clearTimeout(rz);
       clearTimeout(touchEndTimeout);
       themeObserver.disconnect();
+      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
@@ -1152,10 +1180,6 @@ void main(){
     <div
       ref={containerRef}
       id="st"
-      style={{
-        zIndex: phase === "welcome" ? 9995 : 0,
-        transition: "z-index 0s 0.7s",
-      }}
       aria-hidden="true"
     >
       <canvas ref={glCanvasRef} id="gl" />

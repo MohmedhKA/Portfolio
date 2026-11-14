@@ -1,42 +1,64 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MinecraftContactProps {
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-// Generate a shuffled grid of [col, row] indices for random dissolve order
-function useShuffledGrid(cols: number, rows: number) {
-  return useMemo(() => {
-    const cells = Array.from({ length: cols * rows }, (_, i) => ({
-      col: i % cols,
-      row: Math.floor(i / cols),
-      delay: Math.random() * 0.6,
-    }));
-    // Fisher-Yates shuffle for random order
-    for (let i = cells.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [cells[i], cells[j]] = [cells[j], cells[i]];
-    }
-    return cells;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-}
-
+// Generate a deterministic shuffled grid of [col, row] indices for random dissolve order
 const COLS = 20;
 const ROWS = 13;
 
-export default function MinecraftContact({ open, onClose }: MinecraftContactProps) {
+function pseudoRandom(seed: number) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+const SHUFFLED_GRID = (() => {
+  const cells = Array.from({ length: COLS * ROWS }, (_, i) => ({
+    col: i % COLS,
+    row: Math.floor(i / COLS),
+    delay: pseudoRandom(i + 1) * 0.6,
+  }));
+  // Fisher-Yates shuffle with deterministic pseudo-random
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(pseudoRandom(i * 37 + 13) * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+  return cells;
+})();
+
+export default function MinecraftContact({ open, onClose, onSuccess }: MinecraftContactProps) {
   const [phase, setPhase] = useState<"form" | "loading" | "done">("form");
   const [progress, setProgress] = useState(0);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [revealed, setRevealed] = useState(false);
-  const grid = useShuffledGrid(COLS, ROWS);
+  const grid = SHUFFLED_GRID;
+
+  function handleSuccessExit() {
+    setRevealed(false);
+    setPhase("form");
+    setProgress(0);
+    setName(""); setEmail(""); setMessage("");
+    onClose();
+    onSuccess?.();
+  }
+
+  useEffect(() => {
+    if (phase === "done") {
+      const timer = setTimeout(() => {
+        handleSuccessExit();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -59,7 +81,9 @@ export default function MinecraftContact({ open, onClose }: MinecraftContactProp
           body: JSON.stringify({ name, email, message }),
         });
       }
-    } catch (_) {}
+    } catch {
+      // ignore network errors
+    }
 
     setTimeout(() => { setPhase("done"); }, 2600);
   }
@@ -196,7 +220,7 @@ export default function MinecraftContact({ open, onClose }: MinecraftContactProp
             <div className="mc-loading-screen">
               <p className="mc-percent">Message Sent.</p>
               <p className="mc-loading-sub">I&apos;ll reply soon.</p>
-              <button className="mc-btn mc-done-btn" onClick={handleClose}>
+              <button className="mc-btn mc-done-btn" onClick={handleSuccessExit}>
                 Back to World
               </button>
             </div>
