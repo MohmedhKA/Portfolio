@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MinecraftContactProps {
@@ -49,16 +49,6 @@ export default function MinecraftContact({ open, onClose, onSuccess }: Minecraft
     onClose();
     onSuccess?.();
   }
-
-  useEffect(() => {
-    if (phase === "done") {
-      const timer = setTimeout(() => {
-        handleSuccessExit();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

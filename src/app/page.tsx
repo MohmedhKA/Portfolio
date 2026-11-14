@@ -90,10 +90,8 @@ export default function PortfolioRoot() {
   }, [phase]);
 
   function handleContactSuccess() {
+    setLandscapeMode(true);
     setMcContactOpen(false);
-    setTimeout(() => {
-      setLandscapeMode(true);
-    }, 400);
   }
 
   return (
